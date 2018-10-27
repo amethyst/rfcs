@@ -1,7 +1,7 @@
 # RFC
 
-This is the repository where we work and keep track of the biggest RFC documents related to Amethyst.
-Having this repository allows users to make changes to the RFC documents by opening pull requests that can then be reviewed by the RFC manager.
+This is the repository where we work and keep track of the all RFC documents related to Amethyst.
+Having this repository allows users to participate in decision making by opening a pull request with a new document.
 
 ## Creating a new RFC
 
