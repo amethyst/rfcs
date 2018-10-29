@@ -18,7 +18,7 @@ the engine is evolving.
 ## Table of Contents
 [Table of Contents]: #table-of-contents
 
-  - [Opening] Discord Link Here?
+  - [Opening] Should we put a link to the Discord server here?
   - [Table of Contents]
   - [When you need to follow this process]
   - [Before creating an RFC]
@@ -39,7 +39,7 @@ Amethyst, its component crates, or the RFC process itself. The definition of sub
 is somewhat fluid, and to an extent set by the community. Some examples might include:
 
   - A change to a different crate used for physics calculations
-  - Changes to how the editor communications with the engine
+  - Changes to how the editor communicates with the engine
   - Significant protocol changes to the networking library
   - Anything that has the potential to produce a substantial negative impact on users
 
@@ -223,8 +223,7 @@ Some RFC pull requests are tagged with the "postponed" label when they are
 closed (as part of the rejection process). An RFC closed with "postponed" is
 marked as such because we want neither to think about evaluating the proposal
 nor about implementing the described feature until some time in the future, and
-we believe that we can afford to wait until then to do so. Historically,
-"postponed" was used to postpone features until after 1.0. Postponed pull
+we believe that we can afford to wait until then to do so. Postponed pull
 requests may be re-opened when the time is right. We don't have any formal
 process for that, you should ask members of the relevant sub-team.
 
