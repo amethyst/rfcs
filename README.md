@@ -250,10 +250,11 @@ consensus and community norms, not impose more structure than necessary.
 ## License
 [License]: #license
 
-All repositories under the amethyst/ organization are Apache 2.0 or MIT licensed.
+With the exception of amethyst/website, all repositories under the amethyst/ organization are Apache 2.0 or MIT licensed. Amethyst/website is licensed under the CC BY-SA 4.0 license.
 
 * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
 * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+* CC BY-SA 4.0 ([LICENSE-CCBYSA](LICENSE-CCBYSA) or https://creativecommons.org/licenses/by-sa/4.0/)
 
 ### Contributions
 
