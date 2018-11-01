@@ -250,12 +250,10 @@ consensus and community norms, not impose more structure than necessary.
 ## License
 [License]: #license
 
-This repository is currently in the process of being licensed under either of
+All repositories under the amethyst/ organization are Apache 2.0 or MIT licensed.
 
 * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
 * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
-
-at your option.
 
 ### Contributions
 
