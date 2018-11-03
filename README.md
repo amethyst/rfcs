@@ -6,3 +6,4 @@ Having this repository allows people to participate in decision making by openin
 ## Creating a new RFC
 
 The specifics of the RFC process are not yet discussed, but will be documented in the first RFC.
+
