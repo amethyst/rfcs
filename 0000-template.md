@@ -1,7 +1,8 @@
 - Feature Name: (fill me in with a unique ident, my_awesome_feature)
 - Start Date: (fill me in with today's date, YYYY-MM-DD)
 - RFC PR: (leave this empty)
-- Amethyst Issue: (leave this empty)
+- 
+- Tracking Issue: (leave this empty)
 
 # Summary
 [summary]: #summary
@@ -71,3 +72,5 @@ Please keep in mind the core design and philosphy of Amethyst; it is an ECS-base
 - What parts of the design do you expect to resolve through the RFC process before this gets merged?
 - What parts of the design do you expect to resolve through the implementation of this feature before stabilization?
 - What related issues do you consider out of scope for this RFC that could be addressed in the future independently of the solution that comes out of this RFC?
+
+Copyright [yyyy] Amethyst Developers

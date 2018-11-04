@@ -58,13 +58,14 @@ Some changes do not require an RFC:
     invisible to users-of-amethyst.
   - More tests and benchmarks
 
-If you submit a pull request to implement a new feature without going through
-the RFC process, it may be closed with a polite request to submit an RFC first.
+If you submit a pull request that ends up being generating a lot of discussion and
+interest, you may be asked to submit an RFC. What seems to be a minor change can
+have unintended consequences other teams might see.
 
 ### Sub-team specific guidelines
 [Sub-team specific guidelines]: #sub-team-specific-guidelines
 
-For more details on when an RFC is required for the following areas, please see
+For more details on when an RFC is required for the following areas, please see 
 the Amethyst community's [sub-team] specific guidelines for:
 
   - [networking changes](net_changes.md),
@@ -100,7 +101,7 @@ indication that the RFC is worth pursuing.
 
 In short, to get a major feature added to Amethyst, one must first get the RFC
 merged into the RFC repository as a markdown file. At that point the RFC is
-"active" and may be implemented with the goal of eventual inclusion into Amethyst.
+approved and may be implemented with the goal of eventual inclusion into Amethyst.
 
   - Fork the RFC repo [RFC repository]
   - Copy `0000-template.md` to `text/0000-my-feature.md` (where "my-feature" is
@@ -158,14 +159,14 @@ merged into the RFC repository as a markdown file. At that point the RFC is
 ## The RFC life-cycle
 [The RFC life-cycle]: #the-rfc-life-cycle
 
-Once an RFC becomes "active", the tracking issue will be tagged with the label
+Once an RFC becomes approved, the tracking issue will be tagged with the label
 "RFC: Accepted". Authors may implement it and submit the feature as a pull
-request to the Amethyst repo. Being "active" is not a rubber stamp, and in
+request to the Amethyst repo. Being approved is not a rubber stamp, and in
 particular still does not mean the feature will ultimately be merged; it
 does mean that in principle all the major stakeholders have agreed to the
 feature and are amenable to merging it.
 
-Furthermore, the fact that a given RFC has been accepted and is "active"
+Furthermore, the fact that a given RFC has been accepted and is approved
 implies nothing about what priority is assigned to its implementation, nor does
 it imply anything about whether an Amethyst developer has been assigned the task of
 implementing the feature. While it is not *necessary* that the author of the
@@ -173,18 +174,20 @@ RFC also write the implementation, it is by far the most effective way to see
 an RFC through to completion: authors should not expect that other project
 developers will take on responsibility for implementing their accepted feature.
 
-Modifications to "active" RFCs can be done in follow-up pull requests. We
-strive to write each RFC in a manner that it will reflect the final design of
+Modifications to approved RFCs can be done in follow-up pull requests. In
+order for a PR that deviates from the RFC standard, a new RFC that follows
+the accepted guidelines should be written and contain a link to the prior version.
+
+We strive to write each RFC in a manner that it will reflect the final design of
 the feature; but the nature of the process means that we cannot expect every
 merged RFC to actually reflect what the end result will be at the time of the
 next major release.
 
-In general, once accepted, RFCs should not be substantially changed. Only very
-minor changes should be submitted as amendments. More substantial changes
-should be new RFCs, with a note added to the original RFC. Exactly what counts
-as a "very minor change" is up to the sub-team to decide; check
+In general, once accepted, RFCs should not be substantially changed. They should
+be as detailed as possible so that only very minor changes are needed as ammendments.
+More substantial changes should be new RFCs, with a note added to the original RFC. 
+Exactly what counts as a "very minor change" is up to the sub-team to decide; check
 [Sub-team specific guidelines] for more details.
-
 
 ## Reviewing RFCs
 [Reviewing RFCs]: #reviewing-rfcs
@@ -201,7 +204,6 @@ will either be merged or closed. In either case, if the reasoning is not clear
 from the discussion in thread, the sub-team will add a comment describing the
 rationale for the decision.
 
-
 ## Implementing an RFC
 [Implementing an RFC]: #implementing-an-rfc
 
@@ -214,12 +216,14 @@ team uses for all issues in the Amethyst repository.
 
 The author of an RFC is not obligated to implement it. Of course, the RFC
 author (like any other developer) is welcome to post an implementation for
-review after the RFC has been accepted.
+review after the RFC has been accepted. A prototype or other supporting
+materials (data flow diagrams, architecture diagrams, aggregations of
+posts from the community) can all help demonstrate the need and the
+priority of the RFC.
 
-If you are interested in working on the implementation for an "active" RFC, but
+If you are interested in working on the implementation for an approved RFC, but
 cannot determine if someone else is already working on it, feel free to ask
 (e.g. by leaving a comment on the associated issue).
-
 
 ## RFC Postponement
 [RFC Postponement]: #rfc-postponement
