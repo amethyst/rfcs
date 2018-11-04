@@ -1,6 +1,9 @@
-# Amethyst RFCs - [Active RFC List TBD]
+# Amethyst RFCs
 
 [Amethyst RFCs]:
+
+## Opening
+[Opening]: #opening
 
 Many changes, including bug fixes and documentation improvements can be
 implemented and reviewed via the normal GitHub pull request workflow.
@@ -14,11 +17,12 @@ and controlled path for new features to enter the engine and associated
 libraries, so that all stakeholders can be confident about the direction in which
 the engine is evolving.
 
+You may join our Discord here: https://discord.gg/dqe9UYE
 
 ## Table of Contents
 [Table of Contents]: #table-of-contents
 
-  - [Opening] Should we put a link to the Discord server here?
+  - [Opening]
   - [Table of Contents]
   - [When you need to follow this process]
   - [Before creating an RFC]
@@ -154,11 +158,12 @@ merged into the RFC repository as a markdown file. At that point the RFC is
 ## The RFC life-cycle
 [The RFC life-cycle]: #the-rfc-life-cycle
 
-Once an RFC becomes "active" then authors may implement it and submit the
-feature as a pull request to the Amethyst repo. Being "active" is not a rubber
-stamp, and in particular still does not mean the feature will ultimately be
-merged; it does mean that in principle all the major stakeholders have agreed
-to the feature and are amenable to merging it.
+Once an RFC becomes "active", the tracking issue will be tagged with the label
+"RFC: Accepted". Authors may implement it and submit the feature as a pull
+request to the Amethyst repo. Being "active" is not a rubber stamp, and in
+particular still does not mean the feature will ultimately be merged; it
+does mean that in principle all the major stakeholders have agreed to the
+feature and are amenable to merging it.
 
 Furthermore, the fact that a given RFC has been accepted and is "active"
 implies nothing about what priority is assigned to its implementation, nor does
