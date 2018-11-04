@@ -89,7 +89,7 @@ beforehand, to ascertain that the RFC may be desirable; having a consistent
 impact on the project requires concerted effort toward consensus-building.
 
 The most common preparations for writing and submitting an RFC include talking
-the idea over on the Discord channel, specifically with the applicable sub-team.
+the idea over on the [Discord channel](https://discord.gg/dqe9UYE), specifically with the applicable sub-team.
 
 As a rule of thumb, receiving encouraging feedback from long-standing project
 developers, and particularly members of the relevant [sub-team] is a good
