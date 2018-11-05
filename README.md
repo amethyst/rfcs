@@ -2,6 +2,12 @@
 
 [Amethyst RFCs]:
 
+Note that this will be actual links once the bot is set up
+- discussing RFCs (should link to all open PRs here)
+- accepted RFCs (can link to the file tree)
+- RFCs waiting for implementation (issues with label="RFC accepted" -label="status: working"
+
+
 ## Opening
 [Opening]: #opening
 
@@ -22,17 +28,17 @@ You may join our Discord here: https://discord.gg/dqe9UYE
 ## Table of Contents
 [Table of Contents]: #table-of-contents
 
-  - [Opening]
-  - [Table of Contents]
-  - [When you need to follow this process]
-  - [Before creating an RFC]
-  - [What the process is]
-  - [The RFC life-cycle]
-  - [Reviewing RFCs]
-  - [Implementing an RFC]
-  - [RFC Postponement]
-  - [Help this is all too informal!]
-  - [License]
+- [Opening]
+- [Table of Contents]
+- [When you need to follow this process]
+- [Before creating an RFC]
+- [What the process is]
+- [The RFC life-cycle]
+- [Reviewing RFCs]
+- [Implementing an RFC]
+- [RFC Postponement]
+- [Help this is all too informal!]
+- [License]
 
 
 ## When you need to follow this process
@@ -42,24 +48,24 @@ You need to follow this process if you intend to make "substantial" changes to
 Amethyst, its component crates, or the RFC process itself. The definition of substantial
 is somewhat fluid, and to an extent set by the community. Some examples might include:
 
-  - A change to a different crate used for physics calculations
-  - Changes to how the editor communicates with the engine
-  - Significant protocol changes to the networking library
-  - Anything that has the potential to produce a substantial negative impact on users
+- A change to a different crate used for physics calculations
+- Changes to how the editor communicates with the engine
+- Significant protocol changes to the networking library
+- Anything that has the potential to produce a substantial negative impact on users
 
 Some changes do not require an RFC:
 
-  - Rephrasing, reorganizing, refactoring, or otherwise "changing shape does
-    not change meaning".
-  - Additions that strictly improve objective, numerical quality criteria
-    (warning removal, speedup, better platform coverage, more parallelism, trap
-    more errors, etc.)
-  - Additions only likely to be _noticed by_ other developers-of-amethyst,
-    invisible to users-of-amethyst.
-  - More tests and benchmarks
+- Rephrasing, reorganizing, refactoring, or otherwise "changing shape does
+  not change meaning".
+- Additions that strictly improve objective, numerical quality criteria
+  (warning removal, speedup, better platform coverage, more parallelism, trap
+  more errors, etc.)
+- Additions only likely to be _noticed by_ other developers-of-amethyst,
+  invisible to users-of-amethyst.
+- More tests and benchmarks
 
-If you submit a pull request that ends up being generating a lot of discussion and
-interest, you may be asked to submit an RFC. What seems to be a minor change can
+If you submit a pull request that ends up being generating a lot of discussion or
+pushback, you may be asked to submit an RFC. What seems to be a minor change can
 have unintended consequences other teams might see.
 
 ### Sub-team specific guidelines
@@ -68,11 +74,10 @@ have unintended consequences other teams might see.
 For more details on when an RFC is required for the following areas, please see 
 the Amethyst community's [sub-team] specific guidelines for:
 
-  - [networking changes](net_changes.md),
-  - [renderer changes](rend_changes.md),
-  - [engine changes](eng_changes.md),
-  - [web changes](web_changes.md).
-
+- [networking changes](net_changes.md),
+- [renderer changes](rend_changes.md),
+- [engine changes](eng_changes.md),
+- [web changes](web_changes.md).
 
 ## Before creating an RFC
 [Before creating an RFC]: #before-creating-an-rfc
@@ -95,7 +100,6 @@ As a rule of thumb, receiving encouraging feedback from long-standing project
 developers, and particularly members of the relevant [sub-team] is a good
 indication that the RFC is worth pursuing.
 
-
 ## What the process is
 [What the process is]: #what-the-process-is
 
@@ -103,58 +107,58 @@ In short, to get a major feature added to Amethyst, one must first get the RFC
 merged into the RFC repository as a markdown file. At that point the RFC is
 approved and may be implemented with the goal of eventual inclusion into Amethyst.
 
-  - Fork the RFC repo [RFC repository]
-  - Copy `0000-template.md` to `text/0000-my-feature.md` (where "my-feature" is
-    descriptive. don't assign an RFC number yet).
-  - Fill in the RFC. Put care into the details: RFCs that do not present
-    convincing motivation, demonstrate understanding of the impact of the
-    design, or are disingenuous about the drawbacks or alternatives tend to be
-    poorly-received.
-  - Submit a pull request. As a pull request the RFC will receive design
-    feedback from the larger community, and the author should be prepared to
-    revise it in response.
-  - Each pull request will be labeled with the most relevant [sub-team], which
-    will lead to its being triaged by that team in a future meeting and assigned
-    to a member of the subteam.
-  - Build consensus and integrate feedback. RFCs that have broad support are
-    much more likely to make progress than those that don't receive any
-    comments. Feel free to reach out to the RFC assignee in particular to get
-    help identifying stakeholders and obstacles.
-  - The sub-team will discuss the RFC pull request, as much as possible in the
-    comment thread of the pull request itself. Offline discussion will be
-    summarized on the pull request comment thread.
-  - RFCs rarely go through this process unchanged, especially as alternatives
-    and drawbacks are shown. You can make edits, big and small, to the RFC to
-    clarify or change the design, but make changes as new commits to the pull
-    request, and leave a comment on the pull request explaining your changes.
-    *Specifically, do not squash or rebase commits after they are visible on the
-    pull request.*
-  - At some point, a member of the subteam will propose a "motion for final
-    comment period" (FCP), along with a *disposition* for the RFC (merge, close,
-    or postpone).
-    - This step is taken when enough of the tradeoffs have been discussed that
-    the subteam is in a position to make a decision. That does not require
-    consensus amongst all participants in the RFC thread (which is usually
-    impossible). However, the argument supporting the disposition on the RFC
-    needs to have already been clearly articulated, and there should not be a
-    strong consensus *against* that position outside of the subteam. Subteam
-    members use their best judgment in taking this step, and the FCP itself
-    ensures there is ample time and notification for stakeholders to push back
-    if it is made prematurely.
-    - For RFCs with lengthy discussion, the motion to FCP is usually preceded by
-      a *summary comment* trying to lay out the current state of the discussion
-      and major tradeoffs/points of disagreement.
-    - Before actually entering FCP, *all* members of the subteam must sign off;
-    this is often the point at which many subteam members first review the RFC
-    in full depth.
-  - The FCP lasts ten calendar days, so that it is open for at least 5 business
-    days. It is also advertised widely,
-    e.g. in [This Week in Amethyst](https://amethyst.rs/). This way all
-    stakeholders have a chance to lodge any final objections before a decision
-    is reached.
-  - In most cases, the FCP period is quiet, and the RFC is either merged or
-    closed. However, sometimes substantial new arguments or ideas are raised,
-    the FCP is canceled, and the RFC goes back into development mode.
+- Fork the RFC repo [RFC repository]
+- Copy `0000-template.md` to `text/0000-my-feature.md` (where "my-feature" is
+  descriptive. don't assign an RFC number yet).
+- Fill in the RFC. Put care into the details: RFCs that do not present
+  convincing motivation, demonstrate understanding of the impact of the
+  design, or are disingenuous about the drawbacks or alternatives tend to be
+  poorly-received.
+- Submit a pull request. As a pull request the RFC will receive design
+  feedback from the larger community, and the author should be prepared to
+  revise it in response.
+- Each pull request will be labeled with the most relevant [sub-team], which
+  will lead to its being triaged by that team in a future meeting and assigned
+  to a member of the subteam.
+- Build consensus and integrate feedback. RFCs that have broad support are
+  much more likely to make progress than those that don't receive any
+  comments. Feel free to reach out to the RFC assignee in particular to get
+  help identifying stakeholders and obstacles.
+- The sub-team will discuss the RFC pull request, as much as possible in the
+  comment thread of the pull request itself. Offline discussion will be
+  summarized on the pull request comment thread.
+- RFCs rarely go through this process unchanged, especially as alternatives
+  and drawbacks are shown. You can make edits, big and small, to the RFC to
+  clarify or change the design, but make changes as new commits to the pull
+  request, and leave a comment on the pull request explaining your changes.
+  *Specifically, do not squash or rebase commits after they are visible on the
+  pull request.*
+- At some point, a member of the subteam will propose a "motion for final
+  comment period" (FCP), along with a *disposition* for the RFC (merge, close,
+  or postpone).
+  - This step is taken when enough of the tradeoffs have been discussed that
+  the subteam is in a position to make a decision. That does not require
+  consensus amongst all participants in the RFC thread (which is usually
+  impossible). However, the argument supporting the disposition on the RFC
+  needs to have already been clearly articulated, and there should not be a
+  strong consensus *against* that position outside of the subteam. Subteam
+  members use their best judgment in taking this step, and the FCP itself
+  ensures there is ample time and notification for stakeholders to push back
+  if it is made prematurely.
+  - For RFCs with lengthy discussion, the motion to FCP is usually preceded by
+    a *summary comment* trying to lay out the current state of the discussion
+    and major tradeoffs/points of disagreement.
+  - Before actually entering FCP, *all* members of the subteam must sign off;
+  this is often the point at which many subteam members first review the RFC
+  in full depth.
+- The FCP lasts ten calendar days, so that it is open for at least 5 business
+  days. It is also advertised widely,
+  e.g. in [This Week in Amethyst](https://amethyst.rs/). This way all
+  stakeholders have a chance to lodge any final objections before a decision
+  is reached.
+- In most cases, the FCP period is quiet, and the RFC is either merged or
+  closed. However, sometimes substantial new arguments or ideas are raised,
+  the FCP is canceled, and the RFC goes back into development mode.
 
 ## The RFC life-cycle
 [The RFC life-cycle]: #the-rfc-life-cycle
@@ -261,9 +265,9 @@ consensus and community norms, not impose more structure than necessary.
 
 All code in repositories under the amethyst/ organization is Apache 2.0 or MIT licensed while all assets are Creative Commons Attribution 4.0 licensed if not otherwise stated.
 
-* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
-* CC BY-SA 4.0 ([LICENSE-CCBYSA](LICENSE-CCBYSA) or https://creativecommons.org/licenses/by-sa/4.0/)
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+- CC BY-SA 4.0 ([LICENSE-CCBYSA](LICENSE-CCBYSA) or https://creativecommons.org/licenses/by-sa/4.0/)
 
 ### Contributions
 
