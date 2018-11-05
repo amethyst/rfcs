@@ -1,12 +1,11 @@
 # Amethyst RFCs
-
-[Amethyst RFCs]:
+[Amethyst RFCs]: #amethyst-rfcs
 
 Note that this will be actual links once the bot is set up
+
 - discussing RFCs (should link to all open PRs here)
 - accepted RFCs (can link to the file tree)
 - RFCs waiting for implementation (issues with label="RFC accepted" -label="status: working"
-
 
 ## Opening
 [Opening]: #opening
@@ -18,7 +17,7 @@ Some changes though are "substantial", and we ask that these be put through a
 bit of a design process and produce a consensus among the Amethyst community and
 the [sub-team]s.
 
-The "RFC" (Request for Comments) process is intended to provide a consistent
+The "Request for Comments" (RFC) process is intended to provide a consistent
 and controlled path for new features to enter the engine and associated
 libraries, so that all stakeholders can be confident about the direction in which
 the engine is evolving.
@@ -74,10 +73,10 @@ have unintended consequences other teams might see.
 For more details on when an RFC is required for the following areas, please see 
 the Amethyst community's [sub-team] specific guidelines for:
 
-- [networking changes](net_changes.md),
-- [renderer changes](rend_changes.md),
-- [engine changes](eng_changes.md),
-- [web changes](web_changes.md).
+- [Networking changes](net_changes.md)
+- [Renderer changes](rend_changes.md)
+- [Engine changes](eng_changes.md)
+- [Web changes](web_changes.md)
 
 ## Before creating an RFC
 [Before creating an RFC]: #before-creating-an-rfc
@@ -94,11 +93,15 @@ beforehand, to ascertain that the RFC may be desirable; having a consistent
 impact on the project requires concerted effort toward consensus-building.
 
 The most common preparations for writing and submitting an RFC include talking
-the idea over on the [Discord channel](https://discord.gg/dqe9UYE), specifically with the applicable sub-team.
+the idea over on the [Discord channel](https://discord.gg/dqe9UYE), specifically
+with the applicable sub-team and discussing it on our [Amethyst Community Forums](https://community.amethyst-engine.org)
 
-As a rule of thumb, receiving encouraging feedback from long-standing project
-developers, and particularly members of the relevant [sub-team] is a good
-indication that the RFC is worth pursuing.
+We welcome all ideas and strive to provide kind but useful feedback. While not
+every proposal will make it through, that should in no way discourage anyone
+from continuing to make proposals in the future.
+
+If the proposal is promising and someone is new to the RFC process, we will
+do our best to find someone to mentor them through the process.
 
 ## What the process is
 [What the process is]: #what-the-process-is
@@ -109,7 +112,7 @@ approved and may be implemented with the goal of eventual inclusion into Amethys
 
 - Fork the RFC repo [RFC repository]
 - Copy `0000-template.md` to `text/0000-my-feature.md` (where "my-feature" is
-  descriptive. don't assign an RFC number yet).
+  descriptive. Don't assign an RFC number yet).
 - Fill in the RFC. Put care into the details: RFCs that do not present
   convincing motivation, demonstrate understanding of the impact of the
   design, or are disingenuous about the drawbacks or alternatives tend to be
@@ -188,8 +191,8 @@ merged RFC to actually reflect what the end result will be at the time of the
 next major release.
 
 In general, once accepted, RFCs should not be substantially changed. They should
-be as detailed as possible so that only very minor changes are needed as ammendments.
-More substantial changes should be new RFCs, with a note added to the original RFC. 
+be as detailed as possible so that only very minor changes are needed as amendments.
+More substantial changes should be new RFCs, with a note added to the original RFC.
 Exactly what counts as a "very minor change" is up to the sub-team to decide; check
 [Sub-team specific guidelines] for more details.
 
@@ -246,24 +249,20 @@ ever possibly consider making this change, as outlined in the RFC pull request,
 or some semi-obvious variation of it." (When the answer to the latter question
 is "no", then the appropriate response is to close the RFC, not postpone it.)
 
-
-### Help this is all too informal!
+### Help! This is all too informal
 [Help this is all too informal!]: #help-this-is-all-too-informal
 
 The process is intended to be as lightweight as reasonable for the present
 circumstances. As usual, we are trying to let the process be driven by
 consensus and community norms, not impose more structure than necessary.
 
-
-[developer discussion forum]: Worth setting up Discourse for this? It can be bridged to Discord
-[RFC issue tracker]: https://github.com/amethyst/rfcs/issues
-[RFC repository]: http://github.com/amethyst/rfcs
-[sub-team]: We need a link to a list of our subteams here
+[Amethyst Community Forums](https://community.amethyst-engine.org)
 
 ## License
 [License]: #license
 
-All code in repositories under the amethyst/ organization is Apache 2.0 or MIT licensed while all assets are Creative Commons Attribution 4.0 licensed if not otherwise stated.
+All code in repositories under the amethyst/ organization is Apache 2.0 or MIT
+licensed while all assets are Creative Commons Attribution 4.0 licensed if not otherwise stated.
 
 - Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
 - MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
@@ -271,4 +270,6 @@ All code in repositories under the amethyst/ organization is Apache 2.0 or MIT l
 
 ### Contributions
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
