@@ -1,8 +1,6 @@
 # Amethyst RFCs
 [Amethyst RFCs]: #amethyst-rfcs
 
-Note that this will be actual links once the bot is set up
-
 - [Discussing RFCs](https://github.com/amethyst/rfcs/issues)
 - [Accepted RFCs](https://github.com/amethyst/rfcs/tree/master/accepted)
 - [RFCs Awaiting Implementation](https://github.com/amethyst/rfcs/issues?utf8=✓&q=label%3A%22RFC%3A+Accepted%22+-label%3A%22Status%3A+Working%22+)
