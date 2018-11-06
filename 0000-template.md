@@ -17,7 +17,7 @@
 - Start Date: (fill me in with today's date, YYYY-MM-DD)
 - RFC PR: (leave this empty)
 - [Tracking Issue](#tracking-issue): (leave this empty)
-- [Forum Link](#forum-discussion): (if there is one)
+- [Forum Thread](#forum-discussion): (if there is one)
 
 After filling out these fields, please proceed to fill out the remaining sections of this document.
 
