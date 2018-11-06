@@ -77,7 +77,7 @@ the Amethyst community's [sub-team] specific guidelines for:
 
 - [Networking changes](net_changes.md)
 - [Renderer changes](rend_changes.md)
-- [Engine changes](eng_changes.md)
+- [Engine changes](engine_changes.md)
 - [Web changes](web_changes.md)
 
 ## Before creating an RFC
