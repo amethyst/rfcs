@@ -5,7 +5,7 @@ Note that this will be actual links once the bot is set up
 
 - discussing RFCs (should link to all open PRs here)
 - accepted RFCs (can link to the file tree)
-- RFCs waiting for implementation (issues with label="RFC accepted" -label="status: working"
+- RFCs waiting for implementation (issues with label="RFC accepted" -label="status: working")
 
 ## Opening
 [Opening]: #opening
