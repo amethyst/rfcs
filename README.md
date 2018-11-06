@@ -22,23 +22,25 @@ and controlled path for new features to enter the engine and associated
 libraries, so that all stakeholders can be confident about the direction in which
 the engine is evolving.
 
-You may join our Discord here: https://discord.gg/dqe9UYE
+You may join our Discord here: https://discord.gg/dqe9UYE and the Amethyst Community Forum here: https://community.amethyst-engine.org.
 
 ## Table of Contents
 [Table of Contents]: #table-of-contents
 
 - [Opening]
-- [Table of Contents]
-- [When you need to follow this process]
-- [Before creating an RFC]
-- [What the process is]
-- [The RFC life-cycle]
-- [Reviewing RFCs]
-- [Implementing an RFC]
-- [RFC Postponement]
-- [Help this is all too informal!]
-- [License]
-
+- [Table of Contents](#table-of-contents)
+- [When you need to follow this process](#when-you-need-to-follow-this-process)
+  - [Sub-team Specific Guidelines](#sub-team-specific-guidelines)
+- [Before creating an RFC](#before-creating-an-rfc)
+- [What the process is](#what-the-process-is)
+- [Tracking Issues](#tracking-issues)
+  - [Labels and Tags](#labels-tags)
+- [The RFC life-cycle](#the-rfc-life-cycle)
+  - [Reviewing RFCs](#reviewing-rfcs)
+  - [Implementing an RFC](#implementing-an-rfc)
+  - [RFC Postponement](#rfc-postponement)
+- [Help this is all too informal!](#help-this-is-all-too-informal)
+- [License](#license)
 
 ## When you need to follow this process
 [When you need to follow this process]: #when-you-need-to-follow-this-process
@@ -163,8 +165,32 @@ approved and may be implemented with the goal of eventual inclusion into Amethys
   closed. However, sometimes substantial new arguments or ideas are raised,
   the FCP is canceled, and the RFC goes back into development mode.
 
+## Tracking Issues
+[tracking-issues]: #tracking-issues
+These are issues created on GitHub that track the implementation progress of the RFC.
+They link to related issues, have checkboxes, or other structures that make them more
+of a meta-issue than an issue for adding a specific feature or fixing a bug.
+
+This issue is one the sub-team will create, not one you need to create.
+
+## Labels and Tags
+[labels-tags]: #labels-tags
+
+We use the following tags for RFC tracking issues:
+
+- RFC: Proposed
+- RFC: Accepted
+- RFC: Declined
+- RFC: Complete
+- RFC: Postponed
+
+See the life-cycle section below for details on what these mean.
+
 ## The RFC life-cycle
 [The RFC life-cycle]: #the-rfc-life-cycle
+
+When an RFC is first created, a tracking issue is created and given the label
+"RFC: Proposed".
 
 Once an RFC becomes approved, the tracking issue will be tagged with the label
 "RFC: Accepted". Authors may implement it and submit the feature as a pull
@@ -196,7 +222,7 @@ More substantial changes should be new RFCs, with a note added to the original R
 Exactly what counts as a "very minor change" is up to the sub-team to decide; check
 [Sub-team specific guidelines] for more details.
 
-## Reviewing RFCs
+### Reviewing RFCs
 [Reviewing RFCs]: #reviewing-rfcs
 
 While the RFC pull request is up, the sub-team may schedule meetings with the
@@ -209,9 +235,11 @@ are well understood. These decisions can be made at any time, but the sub-team
 will regularly issue decisions. When a decision is made, the RFC pull request
 will either be merged or closed. In either case, if the reasoning is not clear
 from the discussion in thread, the sub-team will add a comment describing the
-rationale for the decision.
+rationale for the decision. In the case of the RFC being closed, the tag
+"RFC: Declined" will be added to the tracking issue. If it is merged, it will
+receive the tag "RFC: Accepted".
 
-## Implementing an RFC
+### Implementing an RFC
 [Implementing an RFC]: #implementing-an-rfc
 
 Some accepted RFCs represent vital features that need to be implemented right
@@ -232,18 +260,21 @@ If you are interested in working on the implementation for an approved RFC, but
 cannot determine if someone else is already working on it, feel free to ask
 (e.g. by leaving a comment on the associated issue).
 
-## RFC Postponement
+Once an RFC has been implemented, the tracking issue will be closed and given
+the label "RFC: Complete".
+
+### RFC Postponement
 [RFC Postponement]: #rfc-postponement
 
-Some RFC pull requests are tagged with the "postponed" label when they are
-closed (as part of the rejection process). An RFC closed with "postponed" is
+Some RFC pull requests are tagged with the "RFC: Postponed" label when they are
+closed (as part of the rejection process). An RFC closed with "RFC: Postponed" is
 marked as such because we want neither to think about evaluating the proposal
 nor about implementing the described feature until some time in the future, and
 we believe that we can afford to wait until then to do so. Postponed pull
 requests may be re-opened when the time is right. We don't have any formal
 process for that, you should ask members of the relevant sub-team.
 
-Usually an RFC pull request marked as "postponed" has already passed an
+Usually an RFC pull request marked as "RFC: Postponed" has already passed an
 informal first round of evaluation, namely the round of "do we think we would
 ever possibly consider making this change, as outlined in the RFC pull request,
 or some semi-obvious variation of it." (When the answer to the latter question

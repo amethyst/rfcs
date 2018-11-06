@@ -1,7 +1,7 @@
 # Table of Contents
-- [Summary]
+
 - [Tracking Issues](#tracking-issue)
-  - [Discourse Discussion](#discourse-discussion)
+  - [Amethyst Community Forum Discussion](#forum-discussion)
 - [Motivation]
 - [Guide Level Explanation](#guide-level-explanation)
 - [Reference Level Explanation](#reference-level-explanation)
@@ -12,11 +12,12 @@
 
 # Basic Info
 [basic]: #basic-info
+
 - Feature Name: (fill me in with a unique ident, my_awesome_feature)
 - Start Date: (fill me in with today's date, YYYY-MM-DD)
 - RFC PR: (leave this empty)
 - [Tracking Issue](#tracking-issue): (leave this empty)
-- [Discourse Link](#discourse-discussion): (if there is one)
+- [Forum Link](#forum-discussion): (if there is one)
 
 After filling out these fields, please proceed to fill out the remaining sections of this document.
 
@@ -25,18 +26,13 @@ After filling out these fields, please proceed to fill out the remaining section
 
 One paragraph explanation of the feature.
 
-# Tracking Issue
-[tracking-issue]: #tracking-issue
-<details>
-<summary>Info about Tracking Issues and how they work</summary>
-These are issues created on GitHub that track the implementation progress of the RFC. They link to related issues, have checkboxes, or other structures that make them more of a meta-issue than an issue for adding a specific feature or fixing a bug.
-</details>
+## Amethyst Community Forum Discussion
+You can access our forums at https://community.amethyst-engine.org
 
-## Discourse Discussion
-[discourse-discussion]: #discourse-discussion
+[forum-discussion]: #forum-discussion
 <details>
-<summary>Information about pre-RFC discussion on Discourse</summary>
-There is a category on our Discourse forums for what can be considered pre-RFC discussion. It is a good place to get some quick feedback from the community without having to go through the entire process.
+<summary>Information about pre-RFC discussion on our community forum</summary>
+There is a category on our forums for what can be considered pre-RFC discussion. It is a good place to get some quick feedback from the community without having to go through the entire process.
 
 This is not required, but if one exists and contains useful information, you may place a link to it here.
 </details>
@@ -99,8 +95,6 @@ A few examples of what this can include are:
 
 This section is intended to encourage you as an author to think about the lessons from other languages, provide readers of your RFC with a fuller picture.
 If there is no prior art, that is fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from other languages.
-
-Please keep in mind the core design and philosphy of Amethyst; it is an ECS-based game engine.
 </details>
 
 # Unresolved Questions
