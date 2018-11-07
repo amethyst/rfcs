@@ -1,8 +1,8 @@
 # Amethyst RFCs
 [Amethyst RFCs]: #amethyst-rfcs
 
-- [Discussing RFCs](https://github.com/amethyst/rfcs/issues)
-- [Accepted RFCs](https://github.com/amethyst/rfcs/tree/master/accepted)
+- [Discussing RFCs](https://github.com/amethyst/rfcs/pulls)
+- [Accepted RFCs](https://github.com/amethyst/rfcs/tree/master)
 - [RFCs Awaiting Implementation](https://github.com/amethyst/rfcs/issues?utf8=✓&q=label%3A%22RFC%3A+Accepted%22+-label%3A%22Status%3A+Working%22+)
 
 ## Opening
