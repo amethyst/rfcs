@@ -61,7 +61,9 @@ Some changes do not require an RFC:
   more errors, etc.)
 - Additions only likely to be _noticed by_ other developers-of-amethyst,
   invisible to users-of-amethyst.
-- More tests and benchmarks
+- More tests and benchmarks.
+- Convenience functions or quality of life improvements that do not affect
+  current functionality or backwards compatibility.
 
 If you submit a pull request that ends up being generating a lot of discussion or
 pushback, you may be asked to submit an RFC. What seems to be a minor change can

@@ -92,10 +92,9 @@ A few examples of what this can include are:
 - For community proposals: Is this done by some other community and what were their experiences with it?
 - For other teams: What lessons can we learn from what other communities have done here?
 - Papers: Are there any published papers or great posts that discuss this? If you have some relevant papers to refer to, this can serve as a more detailed theoretical background.
-- Existing Engines: Does the feature exist in another gaming engine? If so, which ones? Does it work well, and how has the community received it?
 
-This section is intended to encourage you as an author to think about the lessons from other languages, provide readers of your RFC with a fuller picture.
-If there is no prior art, that is fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from other languages.
+This section is intended to encourage you as an author to think about the lessons from other engines, provide readers of your RFC with a fuller picture.
+If there is no prior art, that is fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from other engines.
 </details>
 
 # Unresolved Questions
