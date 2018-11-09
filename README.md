@@ -11,7 +11,7 @@
 Many changes, including bug fixes and documentation improvements can be
 implemented and reviewed via the normal GitHub pull request workflow.
 
-Some changes though are "substantial", and we ask that these be put through a
+Some changes though are 'substantial', and we ask that these be put through a
 bit of a design process and produce a consensus among the Amethyst community and
 the [sub-team]s.
 
@@ -20,7 +20,7 @@ and controlled path for new features to enter the engine and associated
 libraries, so that all stakeholders can be confident about the direction in which
 the engine is evolving.
 
-You may join our Discord here: https://discord.gg/dqe9UYE and the Amethyst Community Forum here: https://community.amethyst-engine.org.
+You may join our [Discord here](https://discord.gg/dqe9UYE) and the [Amethyst Community Forum](https://community.amethyst-engine.org) here: https://community.amethyst-engine.org.
 
 ## Table of Contents
 [Table of Contents]: #table-of-contents
@@ -32,7 +32,7 @@ You may join our Discord here: https://discord.gg/dqe9UYE and the Amethyst Commu
 - [Before creating an RFC](#before-creating-an-rfc)
 - [What the process is](#what-the-process-is)
 - [Tracking Issues](#tracking-issues)
-  - [Labels and Tags](#labels-tags)
+  - [Labels and Tags](#labels-and-tags)
 - [The RFC life-cycle](#the-rfc-life-cycle)
   - [Reviewing RFCs](#reviewing-rfcs)
   - [Implementing an RFC](#implementing-an-rfc)
@@ -158,7 +158,7 @@ approved and may be implemented with the goal of eventual inclusion into Amethys
   in full depth.
 - The FCP lasts ten calendar days, so that it is open for at least 5 business
   days. It is also advertised widely,
-  e.g. in [This Week in Amethyst](https://amethyst.rs/). This way all
+  e.g. in [This Week in Amethyst](https://amethyst.rs/blog). This way all
   stakeholders have a chance to lodge any final objections before a decision
   is reached.
 - In most cases, the FCP period is quiet, and the RFC is either merged or
@@ -174,7 +174,7 @@ of a meta-issue than an issue for adding a specific feature or fixing a bug.
 This issue is one the sub-team will create, not one you need to create.
 
 ## Labels and Tags
-[labels-tags]: #labels-tags
+[labels-tags]: #labels-and-tags
 
 We use the following tags for RFC tracking issues:
 
