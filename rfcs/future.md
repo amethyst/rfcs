@@ -3,7 +3,6 @@
 # Table of Contents
 
 - [Tracking Issues](#tracking-issue)
-  - [Amethyst Community Forum Discussion](#forum-discussion)
 - [Motivation]
 - [Guide Level Explanation](#guide-level-explanation)
 - [Reference Level Explanation](#reference-level-explanation)
@@ -52,7 +51,29 @@ We need a way to get that result (or side-effects, also called actions) to modif
 There is multiple ways we can achieve this, but I will only be covering the two main methods here.
 Both methods rely on the same mechanism: A shared multi-writer queue.
 
-### Option A: 
+### Option A: Hardcoded side-effecting
+
+When writing to the queue, you would provide functions that take a mutable instance of `World` as parameter and modify the resources inside. Those functions would then be executed by Amethyst's `Application` update loop, modifying the resources on the main thread.
+
+This is effectively a coroutine construct.
+
+#### Advantages
+* Simple to code complex or multiple effects in a simple call (create 10 entities, delete 5 others and write to some resource)
+
+#### Caveats
+* The type of programming used here is called "callback driven". It is somewhat the opposite of data-driven, as all the behavior is made of hardcoded behaviour and cannot be outsourced to files.
+
+### Option B: Events only
+
+When writing to the queue, you only push Events (usually user-defined). Those events, of course, can have data. In the case of a http/POST, it could be the return code of the call (i.e OK/200). It could also be the data returned by the server, or even the whole answer `Body` from hyper. The only limitation is that the data has to be Send+Sync+'static (Event constraint of shrev).
+
+#### Advantages
+* Event-driven. While it is not data-driven yet, event-driven programming is generally considered better practice than callback-driven, as events are stored as data inside of the EventChannel resources.
+* The event emission part is re-usable. It can be re-used from inside of the engine for other purposes, even if those are not async. For example: A "quit game" event that can happen if the player clicks the "quit" button, or if the server connection is dropped.
+* Data and handling are separated. The event can be handled in a `System` or in a `State`, and the execution is not locked to a single location (multiple readers).
+
+#### Caveats
+* Specialized events. Instead of just having general and re-usable events, the user will also need to make very specialized events which will somewhat pollute the global scope of StateEvent (the enum will become large, adding one event and one handler for each type of async computation)
 
 </details>
 
@@ -60,13 +81,58 @@ Both methods rely on the same mechanism: A shared multi-writer queue.
 [reference-level-explanation]: #reference-level-explanation
 <details>
 <summary>The technical details and design of the RFC.</summary>
-This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
-- Its interaction with other features is clear.
-- It is reasonably clear how the feature would be implemented.
-- Corner cases are dissected by example.
+The amount of code required for the actual feature described by this rfc is minimal. The importance lies in how that affects end-user code, as well as the internal features that will be based on this.
 
-The section should return to the examples given in the previous section, and explain more fully how the detailed proposal makes those examples work.
+## Queue types
+
+Currently, I consider using crossbeam lock-free queues. Not having done enough research on them, I will just be naming the type in question `Queue<T>`.
+
+### Option A: Hardcoded side-effecting
+
+The type of the queue resource looks like the following:
+```rs
+Arc<Queue<Fn(&mut World) -> ()>>
+```
+
+As mentionned in the previous section, the side effects would happen on the main thread in `Application`.
+
+### Option B: Events only
+
+#### Alternative
+As an alternative to the solution proposed in the Guide-level section, I want to mention it might be possible to have the handling system be generic over EventReader:
+```rs
+Arc<Queue<Box<E: Event>>>
+```
+
+This last alternative allows having a single system moving the events from the queue to the appropriate EventChannel instead of multiple systems.
+However, it involves modifying EventReader to be able to write to the correct EventChannel. It also heavily limits the amount of parallelism, as you need Write access to ALL event channels at once.
+
+This isn't really viable, so I will be skipping this alternative. I mentionned it in case someone gets the same idea.
+
+#### Main Implementation
+```rs
+type AsyncQueue<E: Event> = Arc<Queue<E>>
+```
+
+The bad news is that you would have one queue per event type, which is mildly annoying.
+The good news is that this is heavily parallel.
+
+You would have one handling System for each event type. This is both massively parallel, but also super annoying from the user point of view, because you end up adding 1 to 20 variants of the same System depending on the game complexity.
+
+The handler System type would be:
+```rs
+struct AsyncQueueProcessor<E: Event>
+
+SystemData = (
+	Write<'a, EventChannel<E>>,
+    Read<'a, AsyncQueue<E>>, // Will need more research to understand how this one works with crossbeam.
+)
+
+run()
+	move events from async queue to event channel without clone
+```
+
 </details>
 
 # Drawbacks
@@ -79,23 +145,19 @@ If you don't want to be friendly to the user or have more engine-level features 
 # Rationale and Alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-- Why is this design the best in the space of possible designs?
-- What other designs have been considered and what is the rationale for not choosing them?
-- What is the impact of not doing this?
+This is a direct consequence of the engine not being a purely async one. There is not really any way to have purely async constructs like `Future` without some sort of synchronization, which happens usually either using a `Mutex` or with blocking calls. Here, we are lucky because we can get away by just moving events from an async queue into the `World` without too much overhead. The overhead is that events can be delayed from one frame instead of being executed right as you complete the async computation (if you move the event AFTER the system processing those events has run; fixable by adding a system dependency).
+
+The only alternative I see would be to go full async, but I spent a lot of time trying to come up with such architecture without success, to the point where I doubt it is conceptually possible. This is a much bigger topic however, so let's not have a conversation about this here.
 
 # Prior Art
 [prior-art]: #prior-art
 <details>
 <summary>Discuss previous attempts, both good and bad, and how they relate to this proposal.</summary>
-A few examples of what this can include are:
 
-- For engine, network, web, and rendering proposals: Does this feature exist in other engines and what experience has their community had?
-- For community proposals: Is this done by some other community and what were their experiences with it?
-- For other teams: What lessons can we learn from what other communities have done here?
-- Papers: Are there any published papers or great posts that discuss this? If you have some relevant papers to refer to, this can serve as a more detailed theoretical background.
+Unity uses coroutines running on the main thread to achieve this. They are effectively equivalent to the Option A proposed earlier (hardcoded behavior).
 
-This section is intended to encourage you as an author to think about the lessons from other engines, provide readers of your RFC with a fuller picture.
-If there is no prior art, that is fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from other engines.
+I haven't done extensive research on this subject, so feel free to submit more prior-art.
+
 </details>
 
 # Unresolved Questions
@@ -103,9 +165,7 @@ If there is no prior art, that is fine - your ideas are interesting to us whethe
 <details>
 <summary>Additional questions to consider</summary>
 
-- What parts of the design do you expect to resolve through the RFC process before this gets merged?
-- What parts of the design do you expect to resolve through the implementation of this feature before stabilization?
-- What related issues do you consider out of scope for this RFC that could be addressed in the future independently of the solution that comes out of this RFC?
+Personally, I prefer the approach B where there is one queue and system per event type, but I would like to hear your thoughts on this. Maybe someone will see an approach that I missed (I hope!)
 </details>
 
 Copyright 2018 Amethyst Developers
