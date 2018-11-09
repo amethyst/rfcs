@@ -75,6 +75,25 @@ When writing to the queue, you only push Events (usually user-defined). Those ev
 #### Caveats
 * Specialized events. Instead of just having general and re-usable events, the user will also need to make very specialized events which will somewhat pollute the global scope of StateEvent (the enum will become large, adding one event and one handler for each type of async computation)
 
+## Other example
+
+Now, this all seemed one sided, did it?
+
+Let's take a slightly more complex use case:
+
+Run a POST call on a login service.
+If the login succeeds, write to an `Auth` resource the received connection token.
+If the login doesn't succeed, write the error in an error box via amethyst_ui.
+
+Now, using solution A, doing both of those is trivial.
+However, if you are using solution B, you need to:
+* Write the event
+* Catch the event and react to it
+
+As you can see, it is no longer a one step solution, but two on the user's side (+ the internal steps, like moving the events from the queue).
+
+There is definitely tradeoffs to be had, depending on the use case. This is why this RFC was made. The code will be barely 20 to 30 lines, but the implications are big.
+
 </details>
 
 # Reference-Level Explanation
