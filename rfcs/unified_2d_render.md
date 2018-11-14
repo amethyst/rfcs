@@ -298,8 +298,10 @@ For example, if you would want to draw 100_000 circles, it may be possible that 
 [unresolved-questions]: #unresolved-questions
 <details>
 <summary>Additional questions to consider</summary>
-- How much more performant is SVG rasterization on the gpu vs on the cpu? If its a lot, we need a dedicated Pass for Svg rendering. If its not, we can rasterize it on the cpu, and use the shared `Pass` described by this RFC.
-- The same question is true with text rasterization.
+
+* How much more performant is SVG rasterization on the gpu vs on the cpu? If its a lot, we need a dedicated Pass for Svg rendering. If its not, we can rasterize it on the cpu, and use the shared `Pass` described by this RFC.
+* The same question is true with text rasterization.
+
 </details>
 
 <br/>
