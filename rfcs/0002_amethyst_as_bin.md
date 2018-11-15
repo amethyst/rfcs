@@ -1,6 +1,5 @@
 # Table of Contents
 
-- [Tracking Issues](#tracking-issue)
 - [Motivation](#motivation)
 - [Guide Level Explanation](#guide-level-explanation)
 - [Reference Level Explanation](#reference-level-explanation)
@@ -29,12 +28,12 @@ chose to reverse that, and make it so that we provided a binary for which their 
 
 # Motivation
 [motivation]: #motivation
-There are three areas of the software that stand to benefit from this
+There are four areas of the software that stand to benefit from this
 
 1. Initialization. If we control the main engine initialization sequence then we can avoid handing control over to the user
 before the engine is fully initialized.  The biggest benefit this has is that user provided `System::setup()` methods can use
 `!Default` resources.  Most commonly, these resources come from the rendering system, such as `ScreenDimensions`.  In order to
-gain the most benefits from this we are going to have to introduce a "core dispatcher" concept tp the engine.
+gain the most benefits from this we are going to have to introduce a "core dispatcher" concept to the engine.
 The core dispatcher would be responsible for input, and rendering, both of which would be optional.  If neither are enabled
 then we simply don't run the core dispatcher.
 
@@ -43,9 +42,14 @@ One of these executables could be the standalone engine, and another one could b
 "play" button that starts executing the user code, and since we control the flow of execution now we can also "stop" gameplay
 whenever we feel.
 
-3. Scripting. Part of our executable can be identifying, incorporating, and executing code written in foreign languages. Since we
-control the flow of execution here we are no longer dependent on the user authoring Rust code in order to identify and
+3. Scripting. Part of our executable can be identifying, incorporating, and executing code written in foreign programming languages. 
+Since we control the flow of execution here we are no longer dependent on the user authoring Rust code in order to identify and
 execute their scripts. In theory, you could use Amethyst without needing to know Rust at all.
+
+4. Crossplatform compilation?  It's unclear if this benefit would be achievable as we don't have a proof of concept but it's possible
+that this model would allow us to compile a game out to Apple devices without actually owning an Apple device.  It's worth noting
+this feature only really matters to hobbyist users, as professionals are going to insist on QAing their build for which they'll still
+need actual player hardware.
 
 # Guide-Level Explanation
 [guide-level-explanation]: #guide-level-explanation
@@ -94,9 +98,9 @@ Here are the functions and types we expect you to provide:
 # Reference-Level Explanation
 [reference-level-explanation]: #reference-level-explanation
 
-During compilation the amethyst engine links against a user provided crate which is expected to provide all of the functions listed above.
-The new main method we provide calls these functions at appropriate times during initialization of the game and/or editor so as to place
-the user provided values into the correct locations during the startup process.
+During compilation the amethyst engine links against a user provided crate which is expected to provide all of the functions listed 
+above. The new main method we provide calls these functions at appropriate times during initialization of the game and/or editor so as 
+to place the user provided values into the correct locations during the startup process.
 
 # Drawbacks
 [drawbacks]: #drawbacks
@@ -107,33 +111,34 @@ Additionally we will have to provide clear and comprehensive learning materials 
 # Rationale and Alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-- Why is this design the best in the space of possible designs?
-- What other designs have been considered and what is the rationale for not choosing them?
-- What is the impact of not doing this?
+The primary reason to consider this workflow is that by taking back `fn main()` we can build out features such as an editor and 
+scripting in a way that doesn't require our users to be well versed on how to interface their game with our editor.  With this approach
+we can provide a simple "launch in editor" button and/or command rather than asking users to alter their code to launch in our editor.
+
+The major alternative is to leave things as they are.  While it's a little easier to maintain this way, we're somewhat limited in
+what we can do as a lib. Several people have commented on the issue tracker before "libs shouldn't do this" or "libs shouldn't do that" 
+in response to us doing things that are very reasonable for a game engine to need to do. So my takeaway is that we shouldn't be a lib.
 
 # Prior Art
 [prior-art]: #prior-art
-<details>
-<summary>Discuss previous attempts, both good and bad, and how they relate to this proposal.</summary>
-A few examples of what this can include are:
 
-- For engine, network, web, and rendering proposals: Does this feature exist in other engines and what experience has their community had?
-- For community proposals: Is this done by some other community and what were their experiences with it?
-- For other teams: What lessons can we learn from what other communities have done here?
-- Papers: Are there any published papers or great posts that discuss this? If you have some relevant papers to refer to, this can serve as a more detailed theoretical background.
+Some software already using this model is Unreal Engine 4, Unity 3D, Godot, and CryEngine.
 
-This section is intended to encourage you as an author to think about the lessons from other engines, provide readers of your RFC with a fuller picture.
-If there is no prior art, that is fine - your ideas are interesting to us whether they are brand new or if it is an adaptation from other engines.
-</details>
+Some software not using this model is MonoGame, SDL2, GLFW, and the Ogre rendering engine.
+
+Use of this model seems to be the major distinction between game frameworks and game engines.  Engines are executables, frameworks are
+libs.
 
 # Unresolved Questions
 [unresolved-questions]: #unresolved-questions
-<details>
-<summary>Additional questions to consider</summary>
 
-- What parts of the design do you expect to resolve through the RFC process before this gets merged?
-- What parts of the design do you expect to resolve through the implementation of this feature before stabilization?
-- What related issues do you consider out of scope for this RFC that could be addressed in the future independently of the solution that comes out of this RFC?
-</details>
+- Is the provided rough draft of interface functions sufficient?  Should we add more?  Should we change the signature of the existing
+ones?
+
+- What would it look like when a user needs to upgrade the version of Amethyst that they're using?  We can't just use cargo anymore
+if we're going with this approach.  Maybe we could keep most of the engine as a lib and provide amethyst_bin projects that use the
+amethyst crate on cargo, as well as hooking into a user provided "game crate"?
+
+- Will all user provided crates have the same name?  Should we attempt to build a system that supports dynamic user crate names?
 
 Copyright 2018 Amethyst Developers
