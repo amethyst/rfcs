@@ -13,7 +13,7 @@
 
 - Feature Name: amethyst_as_bin
 - Start Date: 2018-11-14
-- RFC PR: (leave this empty until a PR is opened)
+- RFC PR: https://github.com/amethyst/rfcs/pull/6
 - [Tracking Issue](#tracking-issue): (leave this empty)
 
 After filling out these fields, please proceed to fill out the remaining sections of this document.
