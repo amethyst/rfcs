@@ -54,53 +54,61 @@ need actual player hardware.
 # Guide-Level Explanation
 [guide-level-explanation]: #guide-level-explanation
 
-When generating a new Amethyst project you'll find a file in your project called `lib.rs`. In this file will be several
-functions Amethyst depends on you to provide.  Do not remove them, otherwise your project will not work with Amethyst.
+When generating a new Amethyst project you'll find a file in your project called `lib.rs`. In this file you'll find a structure called 
+`Game` implementing a trait called `GameInterface`.  In this trait will be several functions and types Amethyst depends on you to 
+provide.
 
-However, you can and are expected to alter the body of the function to change what is returned. Do not change the function names,
-parameters, or return types.
+Additionally you'll find a function called `init_game() -> impl GameInterface` which is responsible for initializing the `Game` object 
+Amethyst uses. Do not alter the name, or signature of this function, it is the bridge between your crate and Amethyst.  You can however, 
+alter the body of it if you need to do more setup.
 
 Here are the functions and types we expect you to provide:
 
-- `pub type GameData`
+- `type GameData`
 
   This is the type used to store your system dispatchers and any thread local data you may have.  We've pre-populated it with a
   simple to use type from Amethyst called `GameData` but you may want to provide your own type here later when your game gets
   more complicated.
   
-- `pub type Event`
+- `type Event`
 
   This is the type of event that Amethyst will send to your states.  We've populated it with a default called `StateEvent`.
 
-- `pub fn first_state() -> impl State<GameData, Event>`
+- `fn first_state() -> impl State<Self::GameData, Self::Event>`
   
   Provides the first state that your game will execute. In the template file we've provided a basic empty state
   and we are returning it in this function.
   
-- `pub fn input_bindings() -> String`
+- `fn input_bindings() -> Option<String>`
 
   Expected to provide either a path to a file in the RON format describing the input bindings for the player, or 
   the input configuration as a string provided in the RON format. It is pre-populated with the path of an a simple file provided
-  in the template. If you don't wish to use the Amethyst input system you can return an empty string here.
+  in the template. If you don't wish to use the Amethyst input system you can return `None` here instead.
   
-- `pub fn game_data() -> impl DataInit<GameData>` 
+- `fn game_data() -> impl DataInit<GameData>` 
   
   Provides the core of your game's parallelism.  By default we are returning a `GameDataBuilder` type from here with a few bundles
   added that you will probably find useful.  You can read more about custom GameData types in
   [The Book](https://www.amethyst.rs/book/latest/). You do not need to provide input or rendering facilities here, as the Amethyst
   core dispatcher will take care of that for you.
   
-- `pub fn pipeline_builder(pipeline: PipelineBuilder<Queue<()>>) -> Option<impl PipelineBuild>`
+- `fn pipeline_builder(pipeline: PipelineBuilder<Queue<()>>) -> Option<impl PipelineBuild>`
   
   Provides a description of the rendering pipeline.  It is pre-populated with a basic configuration that should
   work for most needs.  If you don't want a window for your game (such as for a headless game server) then you can return `None` here.
+  
+- `fn post_exit()`
+
+  This function will be executed after your game quits, and the world has been unloaded.  Most games won't need to do anything here but 
+  if you, for example need to trigger an upload to a cloud save after the game is over this is the place to do it.
 
 # Reference-Level Explanation
 [reference-level-explanation]: #reference-level-explanation
 
-During compilation the amethyst engine links against a user provided crate which is expected to provide all of the functions listed 
-above. The new main method we provide calls these functions at appropriate times during initialization of the game and/or editor so as 
-to place the user provided values into the correct locations during the startup process.
+During compilation (triggered via a hypothetical cli command `amethyst run`) the amethyst engine links an engine binary against a user 
+provided crate which is expected to provide the interface detailed above. The new main method we provide calls these functions at 
+appropriate times during initialization of the game and/or editor so as to place the user provided values into the correct locations 
+during the startup process.
 
 # Drawbacks
 [drawbacks]: #drawbacks
