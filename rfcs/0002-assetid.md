@@ -20,19 +20,18 @@
 # Summary
 [summary]: #summary
 
-AssetID is a unified way to reference any loadable asset in Amethyst. It proposes an AssetID enum with variants for v4 UUID (AssetUUID), a file path (PathBuf) or a custom URI format ().
+AssetID is a unified way to reference any loadable asset in Amethyst. It proposes an AssetID enum with variants for v4 UUID (AssetUUID), a file path (PathBuf) or a custom URI format (see [Unresolved Questions](#unresolved-questions)).
 
 Note that this is the first part in a series of RFCs I intend to write that details the technical aspects of my earlier [Asset Pipeline](https://github.com/amethyst/amethyst/issues/875) proposal.
 
 # Motivation
 [motivation]: #motivation
-Why are we doing this? What use cases does it support? What is the expected outcome?
 
 To realize the vision of the Asset Pipeline it will be important to be able to address loadable assets in a more powerful way than with a filesystem path.
-Container formats such as GLTF and FBX can benefit from AssetID where an ID can be generated for each loadable asset within the file.
-It is also essential for cross-file references to be done by UUID for Amethyst to handle renaming or moving of files without breaking these references.
+Container formats such as GLTF and FBX can benefit from AssetID where an ID can be generated for each loadable asset within the file as opposed to referencing the entire source file.
+It is also essential that cross-file references use UUID for Amethyst to handle renaming or moving of files without breaking these references.
 
-The primary benefit of AssetID is to make it easier to write tools for Amethyst that handle assets. With a unified system for identifying assets, we can build a unified system for loading assets or metadata about assets which is super useful when building tools.
+The primary benefit of AssetID is to make it easier to write tools for Amethyst that handle assets. With a unified system for identifying assets, we can build a unified system for loading assets or metadata about assets which is super useful when creating editors and visualisers.
 
 # Guide-Level Explanation
 [guide-level-explanation]: #guide-level-explanation
@@ -42,9 +41,9 @@ AssetUUID - Globally/universally unique identifier for an asset - v4 UUID. Gener
 FilePath - The current way of referencing assets. It will still be supported in scenarios where it is possible.
 URI - A way for users to plug in their own custom asset referencing scheme along with their own resolving systems.
 
-I expect users that write code to primarily reference assets using the FilePath variant. References in data, for example like those that are created by a Prefab editor when referencing meshes or textures would use UUID references. This is closer to the expectation of the user since the user did not specify a specific path, but a reference to an asset. 
+I expect users that write code to primarily reference assets using the FilePath variant. References in data, for example those that are created by a Prefab editor when referencing meshes or textures would use UUID references. This is closer to the expectation of the user since the user did not specify a specific path, but a reference to an asset. 
 
-If a user created a prefab using a prefab editor and reference a file that was later renamed or moved, it would be unexpected that the reference could no longer resolve since the user did not specify a path to start with. If this renamed file was referenced by a path in code however, it would be be expected behaviour for the load to fail.
+If a user created a prefab using a prefab editor and references an asset in a file that was later renamed or moved, it would be unexpected for the reference to no longer resolve since the user did not specify a path in the prefab editor. In the case of loading an asset by file path in code, it would be be expected behaviour for the load to fail if a file is removed however.
 
 URI is a general way of referencing an asset that does not exist in the filesystem and was not imported by the asset pipeline. An example of this could be an asset stored in a database somewhere that is specific to the game it is resolved in. URIs are included in AssetID as a point of further extension for game developers and will not be used by any of the initial Asset Pipeline systems.
 The intention is to provide traits that can be implemented to make it easier to integrate custom IDs into the asset loading process.
@@ -71,19 +70,21 @@ Once the Asset Pipeline proposal is fully realized, the AssetID will be used in 
 Each source file can be imported independently in parallel. When importing a single source file, possibly multiple resulting assets will be assigned an AssetUUID each and they may have AssetID dependencies of three kinds: Build, load and instantiate.
 In some cases these dependencies will be defined with the FilePath variant. After the import completes but before persisting metadata, the Asset Pipeline will attempt to resolve the FilePath dependencies of these assets to their AssetUUID equivalents. If the path cannot be resolved, the import will result in an error. This will ensure that the Asset Pipeline and all tools only have to handle stable AssetUUID references that map to specific assets regardless of the filesystem state.
 
+Attentive readers may have realized that a problem occurs in the case of a FilePath reference to a source file with multiple imported assets in them, such as a GLTF file. I propose that the Importer can specify a "main" asset that is to be used for the FilePath->Asset resolving process specified in [Load](load)
+
 ### Build
-When an asset is built for a target platform, the Build Dependencies of the asset will be included for the Builder to consume.
+When an asset is built for a target platform, the build dependencies of the asset will be included for the Builder to consume.
 
 An example of this is shader #include statements. In the import step, the Importer can parse the shader for all include statements and convert these to AssetIDs. The builder will then receive both the source shader and its entire dependency set, including dependencies of dependencies recursively.
 This allows the Builder to be a pure function which makes it a lot easier to implement things like build caching and distributed building.
 
 ### Load
+[load]: #load
 All loading will reference assets using AssetID. Different Resolver implementations will handle resolving an AssetID to a loadable asset blob depending on the runtime environment and the AssetID variant. The Resolver replaces the existing Source trait as a more general solution.
 
 For example, in a development environment the Resolver will probably connect to AssetHub to resolve the AssetID to a build artifact hash based on the target platform, then load the build artifact and return it to the caller.
 
-In a distributable build with optimized packed of assets, the Resolver may have an in-memory map of AssetUUID->FileLocation for knowing where an asset can be loaded from. It then performs the file read and returns the build artifact. For FilePath variants, the Resolver may have an in-memory map of FilePath->AssetUUID it uses before running the AssetUUID resolving process.
-
+In a distributable build with optimized packed of assets, the Resolver may have an in-memory map of AssetUUID->FileLocation for knowing where an asset can be loaded from. It then performs the file read and returns the build artifact. For FilePath variants, the Resolver may have an in-memory map of FilePath->AssetUUID it uses before running the AssetUUID resolving process. 
 In the case of modding or asset overrides, a completely custom Resolver may be written that maintains a map of AssetUUID->FilePath to see if the user has provided a file override. If not, the resolver fallbacks to the resolver for packed assets.
 
 # Drawbacks
