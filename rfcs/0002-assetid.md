@@ -70,7 +70,7 @@ Once the Asset Pipeline proposal is fully realized, the AssetID will be used in 
 Each source file can be imported independently in parallel. When importing a single source file, possibly multiple resulting assets will be assigned an AssetUUID each and they may have AssetID dependencies of three kinds: Build, load and instantiate.
 In some cases these dependencies will be defined with the FilePath variant. After the import completes but before persisting metadata, the Asset Pipeline will attempt to resolve the FilePath dependencies of these assets to their AssetUUID equivalents. If the path cannot be resolved, the import will result in an error. This will ensure that the Asset Pipeline and all tools only have to handle stable AssetUUID references that map to specific assets regardless of the filesystem state.
 
-Attentive readers may have realized that a problem occurs in the case of a FilePath reference to a source file with multiple imported assets in them, such as a GLTF file. I propose that the Importer can specify a "main" asset that is to be used for the FilePath->Asset resolving process specified in [Load](load)
+Attentive readers may have realized that a problem occurs in the case of a FilePath reference to a source file with multiple imported assets in them, such as a GLTF file. I propose that the Importer can specify a "main" asset that is to be used for the FilePath->Asset resolving process specified in [Load](#load)
 
 ### Build
 When an asset is built for a target platform, the build dependencies of the asset will be included for the Builder to consume.
