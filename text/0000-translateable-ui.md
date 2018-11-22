@@ -61,6 +61,7 @@ Text(
     ),
     text: (
         text: "loading-text",
+        translate: true,
         font_size: 25.,
         color: (1., 1., 1., 1.),
         font: File("font/square.ttf", Ttf, ()),
@@ -79,29 +80,35 @@ world.exec(|mut creator: UiCreator| {
         .with_locales("resources/en_US.ftl")
         .create();
 });
+
+// or, if no prefabs are used
+
+UiTranslator.translate(world, locale_storage);
 ```
 
 
 # Reference-Level Explanation
 [reference-level-explanation]: #reference-level-explanation
 
-The translation is done by caching all entities with a `UiText` component on UI creation, and as soon as the locale resource is loaded, replace the text. The original text is the key, and the new text is the translation from the resource file.
+The original text is the key, and the new text is the translation from the resource file. The translation is done by checking a marker field or component (`translate` field in above example) and match the key against a storage. The translation can either be done by a convenience method on the UiCreator directly, or by calling a translation function directly, which checks the world for translate-able components once.
 
-If no value is found to a key, the text should not be replaced. This way, text which should not be translated can simply be kept as text in the prefab.
+If no value is found to a key, the text should not be replaced. This way, at least the key is visible and a developer (or QA) knows which translation is still missing.
 
 In order to make the binding between prefab and resource easy, the creator can be extended with a builder pattern, which can add a path or a handle (for simple re-use).
 
 # Drawbacks
 [drawbacks]: #drawbacks
 
-I do not see any drawbacks, since translation is expected of modern games and this RFC adds a simple way to implement it from a game-dev's perspective.
+I do not see any drawbacks for the proposal itself, since translation is expected of modern games and this RFC adds a simple way to implement it from a game-dev's perspective.
+
+This RFC does not take non-ui texts into account, though, which might also need translation. The above approach is hard to generalize for any component with a text field, and I cannot come up with a good solution to the problem - which might be due to my limited knowledge of Rust and Amethyst.
 
 # Rationale and Alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-As a web-dev working on web apps, I usually cache the locale file and fill the HTML with attributes marking elements for translation, or directly call a function which returns a translation to a given key. It's quite a simple way and state-of-the art as far as I know (see Angular), however, since we know that UiText elements will contain all the text and there's no complex DOM in Amethyst, we can simplify the process and directly write the translation-key into the text field without marking them first.
+As a web-dev working on web apps, I usually cache the locale file and fill the HTML with attributes marking elements for translation, or directly call a function which returns a translation to a given key. It's quite a simple way and state-of-the art as far as I know (see Angular).
 
-Instead of going with the above described apporach for a technical implementation, the translation could be done using a marker (additional field?), which is unset after a successful translation. The Ui builder might expose a way to default the marker to either `true` or `false`.
+Instead of going with the above described apporach for a technical implementation, the translation could be implemented by caching all entities with a `UiText` component on UI creation, and as soon as the locale resource is loaded, replace the text.
 
 # Prior Art
 [prior-art]: #prior-art
@@ -115,6 +122,7 @@ Similarities to how locales are inserted in web frameworks.
 # Unresolved Questions
 [unresolved-questions]: #unresolved-questions
 
-Is this the easiest way to combine prefabs and localization?
+- Is this the easiest way to combine prefabs and localization?
+- How can it be generalized for any (custom?) component with text? Can we use components as markers and traits for that?
 
 Copyright 2018 Amethyst Developers
