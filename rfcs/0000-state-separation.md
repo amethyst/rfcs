@@ -303,11 +303,188 @@ AmethystApplication::blank()
 # Reference-Level Explanation
 [reference-level-explanation]: #reference-level-explanation
 
-Too much to list, I encourage you to look at the refactoring done in association with building the
-prototype.
-
-You can find a diff here:
+For a complete set of changes, see the prototype:
 https://github.com/amethyst/amethyst/compare/master...udoprog:enum-state-machine
+
+## The `State` trait now describes state values and add `StateStorage` trait
+
+This is touched on a bit during the guide-level explanations above.
+
+The `StateStorage` trait allows abstracting away the storage for any given state.
+In combination with the `State` derive, it can provide highly efficient, close-to-zero-cost storage
+since the fields for each callbacks are embedded in the state machine.
+
+```rust
+/// The trait associated with a state.
+pub trait State<E>: Clone + Default + fmt::Debug
+where
+    Self: Sized,
+{
+    /// The storage used for storing callbacks for the given state.
+    type Storage: Default + StateStorage<Self, E>;
+}
+
+/// Provides access to storage for states.
+pub trait StateStorage<S, E>
+where
+    Self: Sized,
+{
+    /// Insert the given callback, returning an existing callback if it is already present.
+    fn insert(
+        &mut self,
+        state: S,
+        callback: Box<dyn StateCallback<S, E>>,
+    ) -> Option<Box<dyn StateCallback<S, E>>>;
+
+    /// Get mutable storage for the given state.
+    fn get_mut(&mut self, value: &S) -> Option<&mut Box<dyn StateCallback<S, E>>>;
+
+    /// Apply the specified function to all values.
+    fn do_values<F>(&mut self, apply: F)
+    where
+        F: FnMut(&mut Box<dyn StateCallback<S, E>>);
+}
+```
+
+## Introduce the `State` derive
+
+Simplifies implementing highly efficient enum-based states.
+
+```rust
+#[derive(State, Debug, Clone)]
+pub enum State {
+    First, // Note: first field is automatically used for `Default`
+    Second,
+}
+```
+
+## Changes to the `Trans` struct
+
+We've dropped the `E` parameter. `Trans` now only encapsulates the state.
+
+```rust
+/// Types of state transitions.
+/// `S` is the state this state machine deals with.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Trans<S> {
+    /// Continue as normal.
+    None,
+    /// Remove the active state and resume the next state on the stack or stop
+    /// if there are none.
+    Pop,
+    /// Pause the active state and push a new state onto the stack.
+    Push(S),
+    /// Remove the current state on the stack and insert a different one.
+    Switch(S),
+    /// Stop and remove all states and shut down the engine.
+    Quit,
+}
+```
+
+## Introduce `StateCallback` trait
+
+This trait contains the callbacks which were previously associated with `State`.
+
+```rust
+pub trait StateCallback<S, E> {
+    /// Executed when the game state begins.
+    fn on_start(&mut self, _: &mut World) {}
+
+    /// Executed when the game state exits.
+    fn on_stop(&mut self, _: &mut World) {}
+
+    /// Executed when a different game state is pushed onto the stack.
+    fn on_pause(&mut self, _: &mut World) {}
+
+    /// Executed when the application returns to this game state once again.
+    fn on_resume(&mut self, _: &mut World) {}
+
+    /// Fired on events.
+    fn handle_event(&mut self, _: &mut World, _: &E) -> Trans<S> {
+        Trans::None
+    }
+
+    /// Executed repeatedly at stable, predictable intervals (1/60th of a second by default),
+    /// if this is the active state.
+    fn fixed_update(&mut self, _: &mut World) -> Trans<S> {
+        Trans::None
+    }
+
+    /// Executed on every frame immediately, as fast as the engine will allow (taking into account the frame rate limit),
+    /// if this is the active state.
+    fn update(&mut self, _: &mut World) -> Trans<S> {
+        Trans::None
+    }
+
+    /// Executed repeatedly at stable, predictable intervals (1/60th of a second by default),
+    /// even when this is not the active state,
+    /// as long as this state is on the [StateMachine](struct.StateMachine.html)'s state-stack.
+    fn shadow_fixed_update(&mut self, _: &mut World) -> Trans<S> {
+        Trans::None
+    }
+
+    /// Executed on every frame immediately, as fast as the engine will allow (taking into account the frame rate limit),
+    /// even when this is not the active state,
+    /// as long as this state is on the [StateMachine](struct.StateMachine.html)'s state-stack.
+    fn shadow_update(&mut self, _: &mut World) -> Trans<S> {
+        Trans::None
+    }
+}
+```
+
+## Introduce the `GlobalCallback` trait
+
+This trait handles changes to the state machine, not any one particular state.
+
+It was needed to implement clean handling of keeping the current `State` up-to-date as a Resource,
+and performing global default input handling.
+
+This trait effectively replaces the need to have complicated type hierarchies with existing states.
+
+```rust
+pub trait GlobalCallback<S, E> {
+    /// Fired when state machine has been started.
+    fn started(&mut self, _: &mut World) {}
+
+    /// Fired when state machine has been stopped.
+    fn stopped(&mut self, _: &mut World) {}
+
+    /// Fired when state has changed, and what it was changed to.
+    fn changed(&mut self, _: &mut World, _: &S) {}
+
+    /// Fired on events.
+    ///
+    /// If multiple callbacks would result in a state transition, they will be applied one after
+    /// another in an undetermined order.
+    fn handle_event(&mut self, _: &mut World, _: &E) -> Trans<S> {
+        Trans::None
+    }
+
+    /// Fired on fixed updates.
+    fn fixed_update(&mut self, _: &mut World) -> Trans<S> {
+        Trans::None
+    }
+
+    /// Fired on updates.
+    fn update(&mut self, _: &mut World) -> Trans<S> {
+        Trans::None
+    }
+}
+```
+
+## Broad API changes
+
+A number of APIs needed to be changed to accommodate explicitly mapping and changing states
+by-value instead of by-instance.
+
+The most notable ones are:
+
+* Deprecating the `new` function on `Application`.
+  This is now considered an anti-pattern since it immediately builds an `Application` without
+  setting up any states.
+  If this is still desired though, the user can explicitly call `build`, but will have to use the
+  unit state.
+* There is no need to specify an initial state since the `State` trait implements `Default`.
 
 # Drawbacks
 [drawbacks]: #drawbacks
