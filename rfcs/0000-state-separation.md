@@ -49,6 +49,8 @@ through how each change works and what motivated them:
 * Modifying states is done through a `States` resource.
 * Refactor amethyst_test.
 
+Finally there will be an example application as it would be written incorporating these changes.
+
 ## States and their callbacks are separated
 
 State implements the `trait State<T, E: Send + Sync + 'static>` trait.
@@ -300,6 +302,150 @@ AmethystApplication::blank()
     .expect("an error")
 ```
 
+## Example Application
+
+This is a trimmed version of the `renderable` example, using the proposed API changes:
+
+```rust
+#[macro_use]
+extern crate amethyst;
+
+use amethyst::{ /* snip */ };
+
+type MyPrefabData = BasicScenePrefab<Vec<PosNormTex>>;
+
+#[derive(State, Debug, Clone)]
+enum State {
+    Loading,
+    Example,
+}
+
+#[derive(Default)]
+struct Loading {
+    progress: ProgressCounter,
+    prefab: Option<Handle<Prefab<MyPrefabData>>>,
+}
+
+struct Example {
+    scene: Handle<Prefab<MyPrefabData>>,
+}
+
+impl StateCallback<State, StateEvent> for Loading {
+    fn on_start(&mut self, world: &mut World) {
+        self.prefab = Some(world.exec(|loader: PrefabLoader<MyPrefabData>| {
+            loader.load("prefab/renderable.ron", RonFormat, (), &mut self.progress)
+        }));
+
+        world.exec(|mut creator: UiCreator| {
+            creator.create("ui/fps.ron", &mut self.progress);
+            creator.create("ui/loading.ron", &mut self.progress);
+        });
+    }
+
+    fn update(&mut self, world: &mut World) -> Trans<State> {
+        match self.progress.complete() {
+            Completion::Failed => {
+                println!("Failed loading assets: {:?}", self.progress.errors());
+                Trans::Quit
+            }
+            Completion::Complete => {
+                println!("Assets loaded, swapping state");
+
+                if let Some(entity) = world.exec(|finder: UiFinder| finder.find("loading")) {
+                    let _ = world.delete_entity(entity);
+                }
+
+                world.write_resource::<States<_, _>>().new_state(
+                    State::Example,
+                    Example {
+                        scene: self.prefab.as_ref().unwrap().clone(),
+                    },
+                );
+
+                Trans::Push(State::Example)
+            }
+            Completion::Loading => Trans::None,
+        }
+    }
+}
+
+impl StateCallback<State, StateEvent> for Example {
+    fn on_start(&mut self, world: &mut World) {
+        world.create_entity().with(self.scene.clone()).build();
+    }
+
+    fn handle_event(&mut self, world: &mut World, event: &StateEvent) -> Trans<State> {
+        // snip
+        Trans::None
+    }
+}
+
+fn main() -> Result<(), Error> {
+    amethyst::start_logger(Default::default());
+
+    let app_root = application_root_dir();
+
+    // Add our meshes directory to the asset loader.
+    let resources_directory = format!("{}/examples/assets/", app_root);
+
+    let display_config_path = format!(
+        "{}/examples/renderable/resources/display_config.ron",
+        app_root
+    );
+
+    let game_data = GameDataBuilder::default()
+        .with(PrefabLoaderSystem::<MyPrefabData>::default(), "", &[])
+        .with::<ExampleSystem>(ExampleSystem::default(), "example_system", &[])
+        .with_bundle(TransformBundle::new().with_dep(&["example_system"]))?
+        .with_bundle(UiBundle::<String, String>::new())?
+        .with_bundle(HotReloadBundle::default())?
+        .with_bundle(FPSCounterBundle::default())?
+        .with_basic_renderer(display_config_path, DrawShaded::<PosNormTex>::new(), true)?
+        .with_bundle(InputBundle::<String, String>::new())?;
+
+    let mut game = Application::build(resources_directory)?
+        .with_state(State::Loading, Loading::default())?
+        .build(game_data)?;
+
+    game.run();
+    Ok(())
+}
+
+struct DemoState {
+    /* snip */
+}
+
+impl Default for DemoState {
+    fn default() -> Self {
+        DemoState {
+            /* snip */
+        }
+    }
+}
+
+#[derive(Default)]
+struct ExampleSystem {
+    fps_display: Option<Entity>,
+}
+
+impl<'a> System<'a> for ExampleSystem {
+    type SystemData = (
+        WriteStorage<'a, Light>,
+        Read<'a, Time>,
+        ReadStorage<'a, Camera>,
+        WriteStorage<'a, Transform>,
+        Write<'a, DemoState>,
+        WriteStorage<'a, UiText>,
+        Read<'a, FPSCounter>,
+        UiFinder<'a>,
+    );
+
+    fn run(&mut self, data: Self::SystemData) {
+        /* snip */
+    }
+}
+```
+
 # Reference-Level Explanation
 [reference-level-explanation]: #reference-level-explanation
 
@@ -469,6 +615,43 @@ pub trait GlobalCallback<S, E> {
     fn update(&mut self, _: &mut World) -> Trans<S> {
         Trans::None
     }
+}
+```
+
+## Introduce a `States<S, E>` resources to manipulate the state machine
+
+While porting the `renderable` example it became apparent that there was a need to manipulate the
+state machine at runtime.
+
+To this end, the `States` resource was added:
+
+```rust
+/// The type of a new state.
+pub(crate) type NewState<S, E> = (S, Box<dyn StateCallback<S, E> + Send + Sync>);
+
+/// A resource used to indirectly manipulate the contents of the state machine.
+pub struct States<S, E> {
+    new_states: SmallVec<[NewState<S, E>; 16]>,
+}
+
+impl<S, E> Default for States<S, E> {
+    fn default() -> Self {
+        States {
+            new_states: Default::default(),
+        }
+    }
+}
+
+impl<S, E> States<S, E> {
+    /// Indicate that we want to create a new state.
+    pub fn new_state<C>(&mut self, state: S, callback: C)
+    where
+        C: 'static + StateCallback<S, E> + Send + Sync;
+
+    /// Drain all new states and push into the provided callback.
+    pub fn drain_new_states<C>(&mut self, mut c: C)
+    where
+        C: FnMut(NewState<S, E>);
 }
 ```
 
