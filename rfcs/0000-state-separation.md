@@ -22,7 +22,7 @@
 # Summary
 [summary]: #summary
 
-Create a clean separation between states, and the callbacks (code) associated with them.
+Create a clean separation between states, and the handlers (code) associated with them.
 
 ## Amethyst Community Forum Discussion
 [forum-discussion]: #forum-discussion
@@ -41,17 +41,17 @@ https://community.amethyst-engine.org/t/request-for-comments-simplified-state-ma
 Here's an overview of what I'm proposing, followed by dedicated sections where I try to walk
 through how each change works and what motivated them:
 
-* States and their callbacks are separated.
+* States and their handlers are separated.
 * Introducing a `State` derive to construct highly efficient storage for state enums.
 * Getting the current state from a system.
-* Introducing global callbacks.
+* Introducing global handlers.
 * Custom GameData in states is deprecated.
 * Modifying states is done through a `States` resource.
 * Refactor amethyst_test.
 
 Finally there will be an example application as it would be written incorporating these changes.
 
-## States and their callbacks are separated
+## States and their handlers are separated
 
 State implements the `trait State<T, E: Send + Sync + 'static>` trait.
 
@@ -62,15 +62,15 @@ This is primarily done by implementing `SimpleState`, and then relying on the bl
 
 This change instead introduces the following:
 
-* A simplified `StateCallback<S, E>` trait, where `S: State<E>`, and `E` is the event.
+* A simplified `StateHandler<S, E>` trait, where `S: State<E>`, and `E` is the event.
 * `Application` is now responsible for driving a single `Dispatcher` through a locally stored `GameData`.
 
-The second part is a big one. That means there's no need to make use of callback abstractions (e.g. `SimpleState`), which makes the number of abstractions used for implementing callbacks fewer.
+The second part is a big one. That means there's no need to make use of handler abstractions (e.g. `SimpleState`), which makes the number of abstractions used for implementing handlers fewer.
 
-Here is a list of some of the signatures of `StateCallback`:
+Here is a list of some of the signatures of `StateHandler`:
 
 ```rust
-trait StateCallback<S, E> {
+trait StateHandler<S, E> {
     fn on_start(&mut self, _: &mut World) {
     }
 
@@ -87,9 +87,9 @@ trait StateCallback<S, E> {
 ```
 
 Most notably `Trans` has been simplified to only take the `State`, and we no longer receive a parameterized `StateData<T>`.
-Events are passed by reference, since they are passed to multiple callbacks (shadow, global, state).
+Events are passed by reference, since they are passed to multiple handlers (shadow, global, state).
 
-This also means that we need to _associate_ a state with its corresponding callback.
+This also means that we need to _associate_ a state with its corresponding handler.
 This is done when building the application like this:
 
 ```rust
@@ -160,12 +160,12 @@ When using this derive, the Storage implementation is also specialized to an imp
 
 ```rust
 struct State_Storage<E> {
-  f1: Option<Box<dyn amethyst::StateCallback<State, E>>>,
-  f2: Option<Box<dyn amethyst::StateCallback<State, E>>>,
+  f1: Option<Box<dyn amethyst::StateHandler<State, E>>>,
+  f2: Option<Box<dyn amethyst::StateHandler<State, E>>>,
 }
 
 impl<E> amethyst::StateStorage<State, E> for State_Storage<E> {
-    fn get_mut(&mut self, value: &State) -> Option<&mut Box<dyn amethyst::StateCallback<State, E>>> {
+    fn get_mut(&mut self, value: &State) -> Option<&mut Box<dyn amethyst::StateHandler<State, E>>> {
         match *self {
             State::Loading => self.f1.as_mut(),
             State::Main => self.f2.as_mut(),
@@ -176,11 +176,11 @@ impl<E> amethyst::StateStorage<State, E> for State_Storage<E> {
 }
 ```
 
-This effectively inilnes the callbacks in the state machine.
+This effectively inlines the handlers in the state machine.
 
 ## Getting the current state from a System
 
-Since states and callbacks are separated, it is now possible to query the current state from a system.
+Since states and handlers are separated, it is now possible to query the current state from a system.
 You do this by adding `Read<'r, State>` to `SystemData`:
 
 ```rust
@@ -191,18 +191,18 @@ impl<'r> System<'r> for MySystem {
 }
 ```
 
-Note that this is maintained internally in `Application` using a global callback that has implemented the `changed` function.
+Note that this is maintained internally in `Application` using a global handler that has implemented the `changed` function.
 
-## Introducing global callbacks
+## Introducing global handlers
 
-Since we no longer have a common ancestor in `SimpleState` I introduced a new mechanism in the state machine called "global callbacks".
+Since we no longer have a common ancestor in `SimpleState` I introduced a new mechanism in the state machine called "global handlers".
 
-These are callbacks that are fired for _all_ states, in particular it is suitable to solve some specific problems in `amethyst_test` where we need to automatically drive state transitions on each update.
+These are handlers that are fired for _all_ states, in particular it is suitable to solve some specific problems in `amethyst_test` where we need to automatically drive state transitions on each update.
 
 ```rust
-/// A callback that is registered for all events.
+/// A handler that is registered for all events.
 /// This is typically used for bookkeeping specific things.
-pub trait GlobalCallback<S, E> {
+pub trait GlobalHandler<S, E> {
     /// Fired when state machine has been started.
     fn started(&mut self, world: &mut World) {}
 
@@ -214,7 +214,7 @@ pub trait GlobalCallback<S, E> {
 
     /// Fired on events.
     ///
-    /// If multiple callbacks would result in a state transition, they will be applied one after
+    /// If multiple handlers would result in a state transition, they will be applied one after
     /// another in an undetermined order.
     fn handle_event(&mut self, world: &mut World, _: &E) -> Trans<S> {
         Trans::None
@@ -235,19 +235,19 @@ pub trait GlobalCallback<S, E> {
 ## Custom GameData is deprecated
 
 Custom GameData is a bit of an awkward fit.
-And making use of it involves implementing a large number of traits and necessitated making the StateCallback trait harder than it should be.
+And making use of it involves implementing a large number of traits and necessitated making the StateHandler trait harder than it should be.
 
-We generally have two places that are readily available for storing data:
+We generally have three places that are readily available for storing data:
 * A `Resource`, which is associated with the `World`.
-* In the state callbacks (since we have `&mut self` access in the callbacks).
-* In the global callbacks (same reason as above).
+* In the state handlers (since we have `&mut self` access in the handlers).
+* In the global handlers (same reason as above).
 
 The biggest motivation to implement custom game data seemed to be to make use of multiple dispatchers.
 But this is fraught with its own set of problems.
 Splitting the dispatchers means your resources can't be accessed in parallel, effectively causing a barrier between them.
 
 The GameData seemed like an akward fit into all of this, so I decided to try and deprecate it.
-The combination of the World, callback, and global callback storage has been sufficient to quite nicely address all architecture patterns I've looked into so far.
+The combination of the World, handler, and global handler storage has been sufficient to quite nicely address all architecture patterns I've looked into so far.
 
 ## Modifying states is done through a `States` resource.
 
@@ -255,11 +255,11 @@ The only feature that couldn't be addressed using the above was adding states to
 
 This became necessary since it's a feature that is used in the `renderable` example to asynchronously load assets, and defer creation of the `Example` state until those assets have been loaded.
 
-Since we no longer return a full state in `Trans`, I decided to implement a resource called `States<S, E>` that can be used to associate new state callbacks.
+Since we no longer return a full state in `Trans`, I decided to implement a resource called `States<S, E>` that can be used to associate new state handlers.
 
 If you look at the `renderable` example in this PR you should get a feel for how it works.
 
-Similarly as before, we only maintain one instance of the callbacks per state.
+Similarly as before, we only maintain one instance of the handlers per state.
 When a state is added here, it is correctly lifecycled, old state is `on_stop`:ed, new state is `on_start`:ed.
 
 Here's an example taken from the `examples/renderable`:
@@ -330,7 +330,7 @@ struct Example {
     scene: Handle<Prefab<MyPrefabData>>,
 }
 
-impl StateCallback<State, StateEvent> for Loading {
+impl StateHandler<State, StateEvent> for Loading {
     fn on_start(&mut self, world: &mut World) {
         self.prefab = Some(world.exec(|loader: PrefabLoader<MyPrefabData>| {
             loader.load("prefab/renderable.ron", RonFormat, (), &mut self.progress)
@@ -369,7 +369,7 @@ impl StateCallback<State, StateEvent> for Loading {
     }
 }
 
-impl StateCallback<State, StateEvent> for Example {
+impl StateHandler<State, StateEvent> for Example {
     fn on_start(&mut self, world: &mut World) {
         world.create_entity().with(self.scene.clone()).build();
     }
@@ -458,7 +458,7 @@ This is touched on a bit during the guide-level explanations above.
 
 The `StateStorage` trait allows abstracting away the storage for any given state.
 In combination with the `State` derive, it can provide highly efficient, close-to-zero-cost storage
-since the fields for each callbacks are embedded in the state machine.
+since the fields for each handler are embedded in the state machine.
 
 ```rust
 /// The trait associated with a state.
@@ -466,7 +466,7 @@ pub trait State<E>: Clone + Default + fmt::Debug
 where
     Self: Sized,
 {
-    /// The storage used for storing callbacks for the given state.
+    /// The storage used for storing handlers for the given state.
     type Storage: Default + StateStorage<Self, E>;
 }
 
@@ -475,20 +475,20 @@ pub trait StateStorage<S, E>
 where
     Self: Sized,
 {
-    /// Insert the given callback, returning an existing callback if it is already present.
+    /// Insert the given handler, returning an existing handler if it is already present.
     fn insert(
         &mut self,
         state: S,
-        callback: Box<dyn StateCallback<S, E>>,
-    ) -> Option<Box<dyn StateCallback<S, E>>>;
+        handler: Box<dyn StateHandler<S, E>>,
+    ) -> Option<Box<dyn StateHandler<S, E>>>;
 
     /// Get mutable storage for the given state.
-    fn get_mut(&mut self, value: &S) -> Option<&mut Box<dyn StateCallback<S, E>>>;
+    fn get_mut(&mut self, value: &S) -> Option<&mut Box<dyn StateHandler<S, E>>>;
 
     /// Apply the specified function to all values.
     fn do_values<F>(&mut self, apply: F)
     where
-        F: FnMut(&mut Box<dyn StateCallback<S, E>>);
+        F: FnMut(&mut Box<dyn StateHandler<S, E>>);
 }
 ```
 
@@ -527,12 +527,12 @@ pub enum Trans<S> {
 }
 ```
 
-## Introduce `StateCallback` trait
+## Introduce `StateHandler` trait
 
-This trait contains the callbacks which were previously associated with `State`.
+This trait contains the handlers which were previously associated with `State`.
 
 ```rust
-pub trait StateCallback<S, E> {
+pub trait StateHandler<S, E> {
     /// Executed when the game state begins.
     fn on_start(&mut self, _: &mut World) {}
 
@@ -578,7 +578,7 @@ pub trait StateCallback<S, E> {
 }
 ```
 
-## Introduce the `GlobalCallback` trait
+## Introduce the `GlobalHandler` trait
 
 This trait handles changes to the state machine, not any one particular state.
 
@@ -588,7 +588,7 @@ and performing global default input handling.
 This trait effectively replaces the need to have complicated type hierarchies with existing states.
 
 ```rust
-pub trait GlobalCallback<S, E> {
+pub trait GlobalHandler<S, E> {
     /// Fired when state machine has been started.
     fn started(&mut self, _: &mut World) {}
 
@@ -600,7 +600,7 @@ pub trait GlobalCallback<S, E> {
 
     /// Fired on events.
     ///
-    /// If multiple callbacks would result in a state transition, they will be applied one after
+    /// If multiple handlers would result in a state transition, they will be applied one after
     /// another in an undetermined order.
     fn handle_event(&mut self, _: &mut World, _: &E) -> Trans<S> {
         Trans::None
@@ -627,7 +627,7 @@ To this end, the `States` resource was added:
 
 ```rust
 /// The type of a new state.
-pub(crate) type NewState<S, E> = (S, Box<dyn StateCallback<S, E> + Send + Sync>);
+pub(crate) type NewState<S, E> = (S, Box<dyn StateHandler<S, E> + Send + Sync>);
 
 /// A resource used to indirectly manipulate the contents of the state machine.
 pub struct States<S, E> {
@@ -644,11 +644,11 @@ impl<S, E> Default for States<S, E> {
 
 impl<S, E> States<S, E> {
     /// Indicate that we want to create a new state.
-    pub fn new_state<C>(&mut self, state: S, callback: C)
+    pub fn new_state<C>(&mut self, state: S, handler: C)
     where
-        C: 'static + StateCallback<S, E> + Send + Sync;
+        C: 'static + StateHandler<S, E> + Send + Sync;
 
-    /// Drain all new states and push into the provided callback.
+    /// Drain all new states and push into the provided handler.
     pub fn drain_new_states<C>(&mut self, mut c: C)
     where
         C: FnMut(NewState<S, E>);
@@ -678,7 +678,7 @@ Users will be required to refactor their existing code to follow the new design.
 # Rationale and Alternatives
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-The overall design came out of trying to simplify state callbacks as much as possible while still
+The overall design came out of trying to simplify state handlers as much as possible while still
 retaining their identity.
 
 An alternative to "naming states" is to extend the existing `State` trait to include this
@@ -700,7 +700,7 @@ aware of any relevant prior art.
 
 * Can these changes be incorporated incrementally?
 * Should we really deprecate custom GameData?
-* Are there additional simplifications we can do to `StateCallback`?
+* Are there additional simplifications we can do to `StateHandler`?
 * Final naming of traits.
 
 Copyright 2018 Amethyst Developers
