@@ -20,7 +20,7 @@ and controlled path for new features to enter the engine and associated
 libraries, so that all stakeholders can be confident about the direction in which
 the engine is evolving.
 
-You may join our [Discord here](https://discord.gg/dqe9UYE) and the [Amethyst Community Forum](https://community.amethyst-engine.org) here: https://community.amethyst-engine.org.
+You may join our [Discord here](https://discord.gg/amethyst) and the [Amethyst Community Forum](https://community.amethyst-engine.org) here: https://community.amethyst-engine.org.
 
 ## Table of Contents
 [Table of Contents]: #table-of-contents
